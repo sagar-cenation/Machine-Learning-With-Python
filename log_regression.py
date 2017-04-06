@@ -1,6 +1,8 @@
 import pandas as pd
-import quandl
-import math
+import quandl, math
+import numpy as np
+from sklearn import preprocessing, cross_validation, svm
+from sklearn.linear_model import LinearRegression
 
 df=quandl.get('WIKI/GOOGL')
 
@@ -17,8 +19,23 @@ forecast_col = 'Adj. Close'
 df.fillna(-99999, inplace=True) #replacing NaN data with something as we cant loose those data
 
 forecast_out = int(math.ceil(0.01*len(df))) #ceil returns float and printing 10% of dataframe
+print(forecast_out)
 
 # creating labels
 df['label'] = df[forecast_col].shift(-forecast_out) #shifting columns -vely
 df.dropna(inplace=True)
-print (df.head())
+# print (df.head())
+
+X = np.array(df.drop(['label'],1)) #feature is everything except label column, df.drop returns new dataframe
+y = np.array(df['label'])
+X = preprocessing.scale(X)
+y = np.array(df['label'])
+
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=0.2)
+
+clf = LinearRegression(n_jobs=10)
+# clf = svm.SVR(kernel='poly')
+clf.fit(X_train, y_train)
+accuracy = clf.score(X_test, y_test)
+
+print accuracy
