@@ -1,5 +1,6 @@
 import pandas as pd
-import quandl 
+import quandl
+import math
 
 df=quandl.get('WIKI/GOOGL')
 
@@ -11,4 +12,13 @@ df['PCT_change']=(df['Adj. Close'] - df['Adj. Open']) / df['Adj. Open'] * 100.0
 
 df = df[['Adj. Close','HL_PCT','PCT_change','Adj. Volume']]
 
-print(df.head)
+# print(df.head)
+forecast_col = 'Adj. Close'
+df.fillna(-99999, inplace=True) #replacing NaN data with something as we cant loose those data
+
+forecast_out = int(math.ceil(0.01*len(df))) #ceil returns float and printing 10% of dataframe
+
+# creating labels
+df['label'] = df[forecast_col].shift(-forecast_out) #shifting columns -vely
+df.dropna(inplace=True)
+print (df.head())
