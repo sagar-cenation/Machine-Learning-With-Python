@@ -29,11 +29,10 @@ forecast_out = int(math.ceil(0.01*len(df))) #ceil returns float and printing 10%
 # creating labels
 df['label'] = df[forecast_col].shift(-forecast_out) #shifting columns -vely
 
-X = np.array(df.drop(['label'],1)) #feature is everything except label column, df.drop returns new dataframe
+X = np.array(df.drop(['label','Adj. Close'],1)) #feature is everything except label column, df.drop returns new dataframe
 X = preprocessing.scale(X) 
-X_lately = X[-forecast_out:] 
 X = X[:-forecast_out:]
-
+X_lately = X[-forecast_out:] 
 
 df.dropna(inplace=True)
 
